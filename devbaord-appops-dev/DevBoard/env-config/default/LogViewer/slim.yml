@@ -1,0 +1,3 @@
+annotationClass: org.appops.log.viewer.core.LogViewer
+modules: 
+    - "org.appops.log.viewer.LogViewerSlimModule"

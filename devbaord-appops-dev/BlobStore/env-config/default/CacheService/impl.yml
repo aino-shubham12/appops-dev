@@ -1,0 +1,11 @@
+annotationClass: org.appops.cache.core.CacheService
+modules: 
+    - "org.appops.cache.injection.GuavaCacheServiceModule"
+config:
+    org.appops.cache.config.GuavaCacheConfig: 
+      expireAfterAccessInMinutes: ""
+      maximumSize: ""
+    org.appops.logging.logger.config.LoggerConfig:
+      destinationLogger: JUL
+      aggregateLogs: false
+      level: ALL

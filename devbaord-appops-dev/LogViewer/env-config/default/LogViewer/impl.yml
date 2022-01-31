@@ -1,0 +1,26 @@
+annotationClass: "org.appops.log.viewer.core.LogViewer"
+modules:
+  - "org.appops.log.viewer.injection.LogViewerModule"
+config:
+    org.appops.entitystore.hibernate.configuration.SchemaConfig: 
+      commonConfig: 
+        hibernate.connection.autoReconnect: "true"
+        hibernate.connection.driver_class: com.mysql.jdbc.Driver
+        hibernate.connection.password: "mysql#htznr"
+        hibernate.connection.url: "jdbc:mysql://brdatabase:3306/"
+        hibernate.connection.username: root
+        hibernate.dialect: org.hibernate.dialect.MySQLDialect
+    org.appops.logging.logger.config.LoggerConfig:
+      destinationLogger: JUL
+      aggregateLogs: false
+      level: ALL
+      handlers:
+        - enable: true
+          name: CONSOLE
+          logLevel: INFO
+        - enable: false
+          name: FILE
+          logLevel: ALL
+          pattern: '[%-5d] %-5p  - %m%n'
+    org.appops.log.viewer.config.LogViewerConfig:
+      baseUrl: "http://localhost:8080"

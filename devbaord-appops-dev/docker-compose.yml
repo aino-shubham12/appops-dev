@@ -1,0 +1,211 @@
+version : "3.7"
+services:
+
+    service_store:
+        build : ServiceStore
+        container_name : ServiceStore
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+
+        ports:
+              - "8080"
+
+        networks: 
+            - appops-dev    
+            
+    brdatabase:
+        build : brdatabase
+        container_name: brdatabase
+        restart : always
+        init: true
+        ports:
+              - "3306:3306"
+        environment :
+            MYSQL_ROOT_PASSWORD : mysql#htznr
+            MYSQL_PASSWORD : root
+        volumes:
+            - database-volume:/var/lib/mysql/
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        networks: 
+            - appops-dev
+            
+            
+    cache_service:
+        build : CacheService
+        container_name : CacheService
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+
+        ports:
+              - "8080"
+          
+        networks: 
+            - appops-dev
+     
+    scheduler_service:
+        build : Scheduler
+        container_name : Scheduler
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+            - cache_service
+
+        ports:
+              - "8080"
+
+        networks: 
+            - appops-dev
+    
+    apache2:
+        build : apache2
+        container_name: apache2
+        volumes:
+              - "/etc/timezone:/etc/timezone:ro"
+              - "/etc/localtime:/etc/localtime:ro"
+              - "/dev/shm:/dev/shm"
+        ports:
+              - "8080:80"
+        restart : always       
+        networks: 
+            - appops-dev
+
+    dev_board_service:
+        build : DevBoard
+        container_name : DevBoard
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+            - cache_service
+            - scheduler_service
+            - log_viewer_service
+            - blob_store_service
+            - app_store_service
+
+        ports:
+              - "8080"
+
+        networks: 
+            - appops-dev 
+
+
+    log_viewer_service:
+        build : LogViewer
+        container_name : LogViewer
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+            - cache_service
+            - scheduler_service
+            - project_manager_service
+
+        ports:
+              - "8080"
+
+        networks: 
+            - appops-dev 
+
+
+    blob_store_service:
+        build : BlobStore
+        container_name : BlobStore
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+            - cache_service
+            - scheduler_service
+
+        ports:
+              - "1234:52149"
+
+        networks: 
+            - appops-dev
+
+    app_store_service:
+        build : AppStore
+        container_name : AppStore
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+            - cache_service
+            - scheduler_service
+            - blob_store_service
+
+        ports:
+              - "8080"
+
+        networks: 
+            - appops-dev
+
+    project_manager_service:
+        build : ProjectManager
+        container_name : ProjectManager
+        restart : always
+        init: true
+        volumes:
+            - "/etc/timezone:/etc/timezone:ro"
+            - "/etc/localtime:/etc/localtime:ro"
+            - "/dev/shm:/dev/shm"
+        depends_on:
+            - brdatabase
+            - service_store
+            - cache_service
+            - scheduler_service
+
+        ports:
+              - "8080"
+
+        networks: 
+            - appops-dev
+
+
+volumes:
+      database-volume:
+networks:
+    appops-dev:
+        driver: bridge
+

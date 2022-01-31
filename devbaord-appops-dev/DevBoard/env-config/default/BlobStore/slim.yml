@@ -1,0 +1,3 @@
+annotationClass: org.appops.blob.core.BlobStore
+modules: 
+    - "org.appops.blob.BlobStoreSlimModule"
